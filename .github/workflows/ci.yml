@@ -9,49 +9,48 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9 # match your local pnpm major version
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
-          cache: 'pnpm'
-      - name: Install pnpm (Corepack, fallback to npm)
-        run: |
-          set -e
-          echo "Trying Corepack..."
-          if command -v corepack >/dev/null 2>&1; then
-            corepack enable || true
-            corepack prepare pnpm@latest --activate || true
-          else
-            echo "Corepack not found"
-          fi
-          # Fallback: try to install pnpm via npm if pnpm not available
-          if ! command -v pnpm >/dev/null 2>&1; then
-            echo "pnpm not found after Corepack, attempting npm global install..."
-            npm i -g pnpm || true
-          fi
-          echo "pnpm version:"; pnpm -v || (echo "pnpm not available" && exit 1)
+          node-version: 18
+          cache: pnpm
+
       - name: Install dependencies
         run: pnpm install
+
       - name: Start API
         run: |
           cd apps/api
           pnpm dev &> /tmp/api.log &
           echo $! > /tmp/api.pid
+
       - name: Wait for API
         run: |
-          for i in {1..15}; do
-            if curl -sSf http://localhost:3001/health; then
+          for i in {1..30}; do
+            if curl -sSf http://localhost:3001/health > /dev/null; then
               echo "API ready"
               exit 0
             fi
-            sleep 1
+            echo "Waiting for API..."
+            sleep 2
           done
-          echo "API did not start";
-          tail -n +1 /tmp/api.log
+          echo "API did not start"
+          echo "==== api.log ===="
+          cat /tmp/api.log || echo "no api.log"
           exit 1
+
       - name: Type check
         run: pnpm -w -r run type-check || true
+
       - name: Lint
         run: pnpm -w -r run lint || true
