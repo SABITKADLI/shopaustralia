@@ -2,26 +2,26 @@
   "name": "shopaustralia-api",
   "version": "1.0.0",
   "private": true,
-  "type": "module",
   "scripts": {
-    "dev": "ts-node src/index.ts",
+    "dev": "node --loader ts-node src/index.ts",
     "build": "tsc",
     "start": "node dist/index.js",
     "db:migrate": "node scripts/migrate.js"
   },
   "dependencies": {
-    "express": "^4.18.0",
-    "pg": "^8.11.0",
-    "redis": "^4.6.0",
-    "dotenv": "^16.3.0",
+    "axios": "^1.6.0",
     "cors": "^2.8.0",
+    "dotenv": "^16.3.0",
+    "express": "^4.18.0",
     "helmet": "^7.1.0",
-    "axios": "^1.6.0"
+    "pg": "^8.11.0",
+    "redis": "^4.6.0"
   },
   "devDependencies": {
-    "typescript": "^5.3.0",
+    "@types/cors": "^2.8.19",
     "@types/express": "^4.17.0",
     "@types/node": "^20.0.0",
-    "ts-node": "^10.9.0"
+    "ts-node": "^10.9.0",
+    "typescript": "^5.3.0"
   }
 }

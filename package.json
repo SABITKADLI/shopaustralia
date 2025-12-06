@@ -7,7 +7,6 @@
     "packages/*"
   ],
   "scripts": {
-    "install": "pnpm install",
     "dev": "pnpm -w -r --parallel dev",
     "build": "pnpm -w -r build",
     "type-check": "pnpm -w -r run type-check || true",
