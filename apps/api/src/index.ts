@@ -1,23 +1,22 @@
 import express from 'express';
-import dotenv from 'dotenv';
+import cors from 'cors';
+import helmet from 'helmet';
 
-// Load environment variables (module declared in src/global.d.ts to avoid
-// requiring @types/dotenv during initial scaffolding).
-dotenv.config();
+import healthRouter from './routes/health';
+import comparisonRouter from './routes/comparison';
+import webhooksRouter from './routes/webhooks';
 
 const app = express();
+const PORT = process.env.PORT || 3001;
+
+app.use(helmet());
+app.use(cors());
 app.use(express.json());
 
-// Use a number for the port if available
-const PORT = process.env.PORT ? Number(process.env.PORT) : 3001;
-
-// Use explicit any types for request/response to avoid implicit any until
-// proper @types/* packages are installed.
-app.get('/health', (_req: any, res: any) => {
-  res.json({ status: 'ok' });
-});
+app.use('/health', healthRouter);
+app.use('/comparison', comparisonRouter);
+app.use('/webhooks', webhooksRouter);
 
 app.listen(PORT, () => {
-  // eslint-disable-next-line no-console
-  console.log(`API server listening on port ${PORT}`);
+  console.log(`✅ API running on port ${PORT}`);
 });
