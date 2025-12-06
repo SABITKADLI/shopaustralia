@@ -32,21 +32,28 @@ jobs:
         run: |
           cd apps/api
           pnpm dev &> /tmp/api.log &
-          echo $! > /tmp/api.pid
+          API_PID=$!
+          echo $API_PID > /tmp/api.pid
+          echo "API PID: $API_PID"
 
       - name: Wait for API
         run: |
+          echo "Waiting for API to start..."
           for i in {1..30}; do
-            if curl -sSf http://localhost:3001/health > /dev/null; then
-              echo "API ready"
+            if curl -sSf http://localhost:3001/health > /dev/null 2>&1; then
+              echo " API ready"
               exit 0
             fi
-            echo "Waiting for API..."
+            echo "Attempt $i/30 - Waiting..."
             sleep 2
           done
-          echo "API did not start"
-          echo "==== api.log ===="
-          cat /tmp/api.log || echo "no api.log"
+          echo " API did not start within 60 seconds"
+          echo ""
+          echo "==== Last 50 lines of api.log ===="
+          tail -n 50 /tmp/api.log 2>/dev/null || echo "Could not read api.log"
+          echo ""
+          echo "==== Process status ===="
+          ps aux | grep -i "ts-node\|node" | grep -v grep || echo "No API process found"
           exit 1
 
       - name: Type check
