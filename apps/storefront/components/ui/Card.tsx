@@ -1,5 +1,7 @@
+import type { ReactNode } from 'react';
+
 type Props = {
-  children: any;
+  children: ReactNode;
 };
 
 export function Card({ children }: Props) {

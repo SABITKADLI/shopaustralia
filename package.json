@@ -1,0 +1,16 @@
+{
+  "name": "shopaustralia-monorepo",
+  "private": true,
+  "version": "1.0.0",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "install": "pnpm install",
+    "dev": "pnpm -w -r --parallel dev",
+    "build": "pnpm -w -r build",
+    "type-check": "pnpm -w -r run type-check || true",
+    "lint": "pnpm -w -r run lint || true"
+  }
+}

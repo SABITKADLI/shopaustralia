@@ -1,8 +1,6 @@
 {
   "name": "shopaustralia-storefront",
   "version": "1.0.0",
-  "name": "shopaustralia-storefront",
-  "version": "1.0.0",
   "private": true,
   "scripts": {
     "dev": "next dev",

@@ -1,0 +1,45 @@
+name: CI
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'pnpm'
+      - name: Install pnpm
+        run: |
+          corepack enable
+          corepack prepare pnpm@latest --activate
+      - name: Install dependencies
+        run: pnpm install
+      - name: Start API
+        run: |
+          cd apps/api
+          pnpm dev &> /tmp/api.log &
+          echo $! > /tmp/api.pid
+      - name: Wait for API
+        run: |
+          for i in {1..15}; do
+            if curl -sSf http://localhost:3001/health; then
+              echo "API ready"
+              exit 0
+            fi
+            sleep 1
+          done
+          echo "API did not start";
+          tail -n +1 /tmp/api.log
+          exit 1
+      - name: Type check
+        run: pnpm -w -r run type-check || true
+      - name: Lint
+        run: pnpm -w -r run lint || true

@@ -83,6 +83,10 @@ build/
 .next/
 out/
 
+# Ignore built distributions in apps
+apps/**/dist/
+
+
 # Nuxt.js build / generate output
 .nuxt
 dist
